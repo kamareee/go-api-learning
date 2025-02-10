@@ -2,14 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	todo "first-go-api/internal"
 	"log"
 	"net/http"
 )
-
-type TodoItem struct {
-	Id   string `json:"id"`
-	Item string `json:"item"`
-}
 
 type ItemId struct {
 	Id string `json:"id"`
@@ -18,11 +14,12 @@ type ItemId struct {
 func main() {
 
 	//var todos = make([]TodoItem, 0)
-	var todos = make(map[string]string)
+	svc := todo.NewService()
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /todo", func(w http.ResponseWriter, r *http.Request) {
-		b, err := json.Marshal(todos)
+		b, err := json.Marshal(svc.GetAll())
 		if err != nil {
 			log.Println(err)
 		}
@@ -34,7 +31,7 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /todo", func(writer http.ResponseWriter, request *http.Request) {
-		var t TodoItem
+		var t todo.Item
 		err := json.NewDecoder(request.Body).Decode(&t)
 
 		if err != nil {
@@ -42,8 +39,7 @@ func main() {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
 		}
-
-		todos[t.Id] = t.Item
+		svc.Add(t)
 		writer.WriteHeader(http.StatusCreated)
 		return
 	})
@@ -54,7 +50,7 @@ func main() {
 		if err != nil {
 			log.Println(err)
 		}
-		delete(todos, item.Id)
+		svc.Delete(item.Id)
 
 		_, err = w.Write([]byte("deleted " + item.Id))
 		if err != nil {
