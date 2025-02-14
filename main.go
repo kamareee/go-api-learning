@@ -1,7 +1,7 @@
 package main
 
 import (
-	todo "first-go-api/internal"
+	"first-go-api/internal/todo"
 	"first-go-api/internal/transport"
 	"log"
 )

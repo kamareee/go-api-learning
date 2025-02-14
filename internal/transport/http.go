@@ -2,7 +2,7 @@ package transport
 
 import (
 	"encoding/json"
-	todo "first-go-api/internal"
+	"first-go-api/internal/todo"
 	"log"
 	"net/http"
 )
